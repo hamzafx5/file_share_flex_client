@@ -2,11 +2,10 @@ import { useState } from "react";
 import Container from "./Container";
 import React from "react";
 import Button from "./Button";
-import Modal from "./Modal";
-import SingUpForm from "./SingUpForm";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Nav() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
     return (
         <>
             <nav className="bg-gray-50 border-b">
@@ -15,24 +14,26 @@ export default function Nav() {
                         <div className="text-[26px] text-accent font-black">
                             File Flex
                         </div>
+                        <ul className="flex gap-4">
+                            <li>
+                                <Link to="/upload">Upload</Link>
+                            </li>
+                        </ul>
                         <div>
-                            <Button variant="primary-outline" className="mr-4">
+                            <Button
+                                onClick={() => navigate("/login")}
+                                variant="primary-outline"
+                                className="mr-4"
+                            >
                                 Log In
                             </Button>
-                            <Button onClick={() => setIsModalOpen(true)}>
+                            <Button onClick={() => navigate("/sign_up")}>
                                 Sign Up
                             </Button>
                         </div>
                     </div>
                 </Container>
             </nav>
-            <Modal
-                isOpen={isModalOpen}
-                close={() => setIsModalOpen(false)}
-                maxWidth={380}
-            >
-                <SingUpForm />
-            </Modal>
         </>
     );
 }

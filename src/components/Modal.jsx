@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
-import { BiX } from "react-icons/bi";
+import { useEffect, useState } from "react";
+import { BiX, BiFullscreen, BiExitFullscreen } from "react-icons/bi";
+import RenderModals from "./RenderModals";
 
 export default function Modal({
     isOpen = false,
@@ -9,7 +9,9 @@ export default function Modal({
     position = "center",
     close,
     children,
+    allowExpand = true,
 }) {
+    const [isFullScreen, setIsFullScreen] = useState(false);
     useEffect(() => {
         function closeWhenUserClickEscape(e) {
             if (e.key === "Escape") close();
@@ -19,34 +21,50 @@ export default function Modal({
             window.removeEventListener("keyup", closeWhenUserClickEscape);
         };
     });
-    const _classes = classNames(
-        "bg-white rounded-md w-[95%] slide-down border",
-        {
-            "self-start": position === "start",
-            "self-center": position === "center",
-            "self-end": position === "end",
-        }
-    );
+    const _classes = classNames("bg-white slide-down", {
+        "self-start": position === "start",
+        "self-center": position === "center",
+        "self-end": position === "end",
+        "w-[95%] h-auto rounded-md my-[5%]": !isFullScreen,
+        "w-full h-full rounded-none": isFullScreen,
+    });
+
+    function toggleFullScreen() {
+        setIsFullScreen((prevVal) => !prevVal);
+    }
     if (!isOpen) return null;
-    return createPortal(
-        <div className="fixed py-[5%] z-[999] w-screen h-screen top-0 left-0 bg-black/20 flex justify-center">
-            <div
-                style={{
-                    maxWidth,
-                }}
-                className={_classes}
-            >
-                <div className="flex justify-end px-4 pt-4">
-                    <div
-                        onClick={close}
-                        className="inline-block cursor-pointer p-1 text-gray-600 rounded-md bg-gray-50 hover:bg-gray-200"
-                    >
-                        <BiX size="22px" />
+    return (
+        <RenderModals>
+            <div className="fixed  z-[999] w-screen h-screen top-0 left-0 bg-black/20 flex justify-center">
+                <div
+                    style={{
+                        maxWidth: isFullScreen ? "unset" : maxWidth,
+                    }}
+                    className={_classes}
+                >
+                    <div className="flex justify-end p-2 gap-2 text-gray-600">
+                        {allowExpand && (
+                            <div
+                                onClick={toggleFullScreen}
+                                className="inline-block cursor-pointer p-1 rounded-sm bg-gray-50 hover:bg-gray-200"
+                            >
+                                {isFullScreen ? (
+                                    <BiExitFullscreen size="20px" />
+                                ) : (
+                                    <BiFullscreen size="20px" />
+                                )}
+                            </div>
+                        )}
+                        <div
+                            onClick={close}
+                            className="inline-block cursor-pointer p-1 rounded-sm bg-gray-50 hover:bg-gray-200"
+                        >
+                            <BiX size="20px" />
+                        </div>
                     </div>
+                    <div className="w-full p-4 md:p-6">{children}</div>
                 </div>
-                <div className="w-full p-4 md:p-6">{children}</div>
             </div>
-        </div>,
-        document.getElementById("modals-container")
+        </RenderModals>
     );
 }

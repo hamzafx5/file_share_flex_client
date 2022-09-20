@@ -15,6 +15,8 @@ export default function Button({
         {
             [className]: className !== "null",
             "bg-accent border-accent text-white": variant === "primary",
+            "bg-black border-black text-white": variant === "dark",
+            " border-black text-black": variant === "dark-outline",
             "text-accent border-accent": variant === "primary-outline",
             "bg-transparent": variant.endsWith("-outline"),
             "block w-full text-center": fullWidth,
